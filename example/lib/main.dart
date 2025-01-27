@@ -106,16 +106,6 @@ class HomePage extends StatelessWidget {
               ),
             ),
           ),
-          Center(
-            child: FlatButton(
-                color: Colors.blue,
-                colorBrightness: Brightness.dark,
-                child: const Text("View More Use Cases"),
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => MoreUseCaseListingPage()));
-                }),
-          ),
         ],
       ),
     );

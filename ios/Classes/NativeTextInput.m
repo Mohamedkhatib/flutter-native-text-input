@@ -122,14 +122,28 @@
 }
 
 - (void)onSetText:(FlutterMethodCall*)call result:(FlutterResult)result {
-    _textView.text = call.arguments[@"text"];
-    _textView.textColor = _delegate.fontColor;
-    _textView.font = _delegate.font;
-    
-    if (_textView.textContainer.maximumNumberOfLines == 1) {
-        _textView.textContainer.lineBreakMode = NSLineBreakByTruncatingTail;
+    // Get the new text from the method call
+    guard let newText = call.arguments as? [String: Any],
+            let text = newText["text"] as? String else {
+        result(FlutterError(code: "INVALID_ARGUMENT", message: "Text argument is missing", details: nil))
+        return
     }
-    result(nil);
+
+    // Check if the new text is different from the current text
+    if _textView.text != text {
+        _textView.text = text
+        _textView.textColor = _delegate.fontColor
+        _textView.font = _delegate.font
+
+        if _textView.textContainer.maximumNumberOfLines == 1 {
+            _textView.textContainer.lineBreakMode = .byTruncatingTail
+        }
+
+        // Optionally, set the cursor color here
+        // _textView.tintColor = UIColor.red // Change to your desired cursor color
+    }
+
+    result(nil)
 }
 
 - (UIView*)view {
