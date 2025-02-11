@@ -335,7 +335,7 @@ class _NativeTextInputState extends State<NativeTextInput> {
             return PlatformViewsService.initSurfaceAndroidView(
               id: params.id,
               viewType: NativeTextInput.viewType,
-              layoutDirection: TextDirection.ltr,
+              layoutDirection: TextDirection.rtl,
               creationParams: _buildCreationParams(layout),
               creationParamsCodec: const StandardMessageCodec(),
             )
@@ -349,6 +349,7 @@ class _NativeTextInputState extends State<NativeTextInput> {
       case TargetPlatform.iOS:
         return UiKitView(
           viewType: NativeTextInput.viewType,
+          layoutDirection: TextDirection.rtl,
           creationParamsCodec: const StandardMessageCodec(),
           creationParams: _buildCreationParams(layout),
           onPlatformViewCreated: _createMethodChannel,
