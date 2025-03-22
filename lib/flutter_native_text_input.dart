@@ -269,10 +269,12 @@ class _NativeTextInputState extends State<NativeTextInput> {
   final Completer<MethodChannel> _channel = Completer();
 
   TextEditingController? _controller;
+
   TextEditingController get _effectiveController =>
       widget.controller ?? (_controller ??= TextEditingController());
 
   FocusNode? _focusNode;
+
   FocusNode get _effectiveFocusNode =>
       widget.focusNode ?? (_focusNode ??= FocusNode());
 
@@ -306,18 +308,25 @@ class _NativeTextInputState extends State<NativeTextInput> {
     }
   }
 
+  Timer? _debounce;
+
   Future<void> _controllerListener() async {
-    final MethodChannel channel = await _channel.future;
-    channel.invokeMethod(
-      "setText",
-      {"text": widget.controller?.text ?? ''},
-    );
-    channel.invokeMethod("getContentHeight").then((value) {
-      if (value != null && value != _contentHeight) {
-        setState(() {
-          _contentHeight = value;
-        });
-      }
+    // Debouncer to limit the frequency of invoking getContentHeight
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 200), () async {
+      final MethodChannel channel = await _channel.future;
+      channel.invokeMethod(
+        "setText",
+        {"text": widget.controller?.text ?? ''},
+      );
+
+      channel.invokeMethod("getContentHeight").then((value) {
+        if (value != null && value != _contentHeight) {
+          setState(() {
+            _contentHeight = value;
+          });
+        }
+      });
     });
   }
 
@@ -483,7 +492,7 @@ class _NativeTextInputState extends State<NativeTextInput> {
       params = {
         ...params,
         "placeholderFontFamily":
-        widget.iosOptions?.placeholderStyle?.fontFamily.toString(),
+            widget.iosOptions?.placeholderStyle?.fontFamily.toString(),
       };
     }
 
